@@ -1,0 +1,315 @@
+import random
+
+class Nation:
+    def __init__(self):
+        # Randomized Starting Values
+        self.budget = 5000000  # Starting budget
+        self.population = random.randint(10000000, 50000000)
+        self.taxes = self.calculate_taxes()
+        self.military_budget = 1000000  # Initial budget allocation
+        self.economy = 500000  # Initial economy
+        self.politics = 500000  # Initial politics
+        self.territory_tax = self.calculate_territory_tax()
+        
+        # Military Data
+        self.troops = 10000
+        self.tanks = 5000
+        self.light_aircraft = 2000
+        self.heavy_aircraft = 50
+
+        # Resources
+        self.metal = 100000
+        self.uranium = 50000
+        self.rifles = 10000
+        self.light_armor = 8000
+        self.heavy_armor = 3000
+
+        # Population Data
+        self.cities = 10
+        self.territories = 5
+
+        # Food Data
+        self.bread = 2000000
+        self.meat = 3000000
+        self.food_losses = self.population // 10
+        self.food_gain = 500000
+        self.farms = 1000000
+        self.farm_yield = 2
+
+        # Diplomatic Data
+        self.allies = self.generate_nations("ally", 3)
+        self.enemies = self.generate_nations("enemy", 1)
+        self.neutral = self.generate_nations("neutral", 1)
+
+        # Generals
+        self.generals = self.generate_generals()
+
+    def calculate_taxes(self):
+        return self.population // 10
+
+    def calculate_territory_tax(self):
+        return self.territories * 200000
+
+    def generate_nations(self, type, count):
+        names = ["Umie Nation", "Ovol Union", "Orlonia", "Tigar’s Nation", "Drakthar Dominion", "Zenth Empire", "Kroton Republic"]
+        nations = []
+        for _ in range(count):
+            name = random.choice(names)
+            names.remove(name)
+            population = random.randint(10000000, 50000000)
+            troops = random.randint(1000, 50000)
+            tanks = random.randint(100, 5000)
+            light_aircraft = random.randint(10, 1000)
+            heavy_aircraft = random.randint(1, 100)
+            nations.append({
+                "name": name,
+                "population": population,
+                "troops": troops,
+                "tanks": tanks,
+                "light_aircraft": light_aircraft,
+                "heavy_aircraft": heavy_aircraft,
+                "type": type
+            })
+        return nations
+
+    def generate_generals(self):
+        first_names = ["Alex", "Jordan", "Taylor", "Morgan", "Riley", "Casey", "Jamie", "Parker", "Reese", "Avery"]
+        last_names = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor"]
+        roles = ["Offense", "Defense"]
+        generals = {}
+        for _ in range(4):
+            name = f"General {random.choice(first_names)} {random.choice(last_names)}"
+            role = random.choice(roles)
+            generals[name] = role
+        return generals
+
+    def display_status(self):
+        print(f"Budget: {self.budget} credits")
+        print(f"Taxes: {self.taxes} credits")
+        print(f"Military Budget: {self.military_budget} credits")
+        print(f"Economy: {self.economy}")
+        print(f"Politics: {self.politics} credits")
+        print(f"Territory Tax: {self.territory_tax} credits")
+
+        print("\nMilitary:")
+        print(f"  Troops: {self.troops}")
+        print(f"  Tanks: {self.tanks}")
+        print(f"  Light Aircraft: {self.light_aircraft}")
+        print(f"  Heavy Aircraft: {self.heavy_aircraft}")
+
+        print("\nResources:")
+        print(f"  Metal: {self.metal}")
+        print(f"  Uranium: {self.uranium}")
+        print(f"  Rifles: {self.rifles}")
+        print(f"  Light Armor: {self.light_armor}")
+        print(f"  Heavy Armor: {self.heavy_armor}")
+
+        print("\nPopulation:")
+        print(f"  Population: {self.population}")
+        print(f"  Cities: {self.cities}")
+        print(f"  Territories: {self.territories}")
+
+        print("\nFood:")
+        print(f"  Bread: {self.bread}")
+        print(f"  Meat: {self.meat}")
+        print(f"  Losses: {self.food_losses} each turn")
+        print(f"  Gains: {self.food_gain} each turn")
+        print(f"  Farms: {self.farms}")
+        print(f"  Farms yield: {self.farm_yield} food each turn")
+
+        print("\nDiplomatic:")
+        print("  Allies:")
+        for ally in self.allies:
+            print(f"    {ally['name']} - Population: {ally['population']}, Troops: {ally['troops']}, Tanks: {ally['tanks']}, Light Aircraft: {ally['light_aircraft']}, Heavy Aircraft: {ally['heavy_aircraft']}")
+        print("  Enemies:")
+        for enemy in self.enemies:
+            print(f"    {enemy['name']} - Population: {enemy['population']}, Troops: {enemy['troops']}, Tanks: {enemy['tanks']}, Light Aircraft: {enemy['light_aircraft']}, Heavy Aircraft: {enemy['heavy_aircraft']}")
+        print("  Neutral:")
+        for neutral in self.neutral:
+            print(f"    {neutral['name']} - Population: {neutral['population']}, Troops: {neutral['troops']}, Tanks: {neutral['tanks']}, Light Aircraft: {neutral['light_aircraft']}, Heavy Aircraft: {neutral['heavy_aircraft']}")
+
+        print("\nGenerals:")
+        for general, role in self.generals.items():
+            print(f"  {general}: {role}")
+
+    def update_turn(self):
+        self.budget += self.taxes + self.territory_tax - self.military_budget
+        self.bread += self.farm_yield * self.farms
+        self.bread += self.food_gain - self.food_losses
+        self.meat += self.food_gain - self.food_losses
+        self.random_event()
+
+    def purchase_troops(self, quantity):
+        cost = (quantity // 100) * 1000
+        if self.rifles >= quantity and self.light_armor >= quantity and self.military_budget >= cost:
+            self.troops += quantity
+            self.rifles -= quantity
+            self.light_armor -= quantity
+            self.military_budget -= cost
+            print(f"Purchased {quantity} troops.")
+        else:
+            print("Not enough resources to purchase troops.")
+
+    def purchase_tanks(self, quantity):
+        cost = (quantity // 100) * 1000
+        if self.metal >= quantity and self.heavy_armor >= quantity and self.military_budget >= cost:
+            self.tanks += quantity
+            self.metal -= quantity
+            self.heavy_armor -= quantity
+            self.military_budget -= cost
+            print(f"Purchased {quantity} tanks.")
+        else:
+            print("Not enough resources to purchase tanks.")
+
+    def purchase_light_aircraft(self, quantity):
+        cost = (quantity // 200) * 300
+        if self.metal >= cost and self.military_budget >= cost:
+            self.light_aircraft += quantity
+            self.metal -= cost
+            self.military_budget -= cost
+            print(f"Purchased {quantity} light aircraft.")
+        else:
+            print("Not enough resources to purchase light aircraft.")
+
+    def purchase_heavy_aircraft(self, quantity):
+        metal_cost = (quantity // 100) * 100000
+        uranium_cost = (quantity // 100) * 10000
+        cost = (quantity // 100) * 2000000
+        if self.metal >= metal_cost and self.uranium >= uranium_cost and self.military_budget >= cost:
+            self.heavy_aircraft += quantity
+            self.metal -= metal_cost
+            self.uranium -= uranium_cost
+            self.military_budget -= cost
+            print(f"Purchased {quantity} heavy aircraft.")
+        else:
+            print("Not enough resources to purchase heavy aircraft.")
+
+    def purchase_city(self):
+        cost = 5000000
+        if self.metal >= 1000000 and self.uranium >= 100000 and self.budget >= cost:
+            self.cities += 1
+            self.metal -= 1000000
+            self.uranium -= 100000
+            self.budget -= cost
+            print("Purchased 1 city.")
+        else:
+            print("Not enough resources to purchase a city.")
+
+    def purchase_territory(self):
+        cost = 2000000
+        if self.budget >= cost:
+            self.territories += 1
+            self.budget -= cost
+            print("Purchased 1 territory.")
+        else:
+            print("Not enough resources to purchase a territory.")
+
+    def purchase_farms(self, quantity):
+        cost = quantity * 1000
+        if self.budget >= cost:
+            self.farms += quantity * 100
+            self.budget -= cost
+            print(f"Purchased {quantity * 100} farms.")
+        else:
+            print("Not enough resources to purchase farms.")
+
+    def marketplace_calculator(self, item, quantity):
+        market_prices = {
+            'metal': 0.5,  # 2 units for 1 credit
+            'uranium': 5,  # 1 unit for 5 credits
+            'rifles': 10,  # 100 units for 1,000 credits
+            'light_armor': 10,  # 100 units for 1,000 credits
+            'heavy_armor': 10,  # 200 units for 2,000 credits
+            'bread': 0.5,  # 2 bread for 1 credit
+            'meat': 3  # 1 meat for 3 credits
+        }
+
+        if item in market_prices:
+            cost = market_prices[item] * quantity
+            print(f"The cost for {quantity} units of {item} is {cost} credits.")
+        else:
+            print("Invalid item.")
+
+    def random_event(self):
+        events = [
+            "A war has broken out!",
+            "A rebellion has started!",
+            "A new ally has been formed!",
+            "A new nation has been discovered!",
+            "A new planet has been found!"
+        ]
+        if random.choice([True, False]):
+            event = random.choice(events)
+            print(f"Event: {event}")
+        else:
+            print("No events this turn.")
+
+    def recruit_general(self):
+        first_names = ["Alex", "Jordan", "Taylor", "Morgan", "Riley", "Casey", "Jamie", "Parker", "Reese", "Avery", "Hunter", "Dakota", "Skyler", "Rowan"]
+        last_names = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Davis", "Miller", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White"]
+        name = f"General {random.choice(first_names)} {random.choice(last_names)}"
+        roles = ["Offense", "Defense"]
+        role = random.choice(roles)
+        self.generals[name] = role
+        print(f"Recruited {name} as {role}")
+
+    def send_spy(self, enemy):
+        for nation in self.enemies:
+            if nation["name"] == enemy:
+                print(f"Spying on {enemy}:")
+                print(f"  Population: {nation['population']}")
+                print(f"  Troops: {nation['troops']}")
+                print(f"  Tanks: {nation['tanks']}")
+                print(f"  Light Aircraft: {nation['light_aircraft']}")
+                print(f"  Heavy Aircraft: {nation['heavy_aircraft']}")
+                return
+        print(f"Enemy {enemy} not found.")
+
+    def initiate_war(self, enemy):
+        for nation in self.enemies:
+            if nation["name"] == enemy:
+                generals = input("Enter the names of the generals you are taking (comma separated): ").split(",")
+                troops = int(input("Enter the number of troops you are taking: "))
+                tanks = int(input("Enter the number of tanks you are taking: "))
+                light_aircraft = int(input("Enter the number of light aircraft you are taking: "))
+                heavy_aircraft = int(input("Enter the number of heavy aircraft you are taking: "))
+                
+                print("War started...")
+                for day in range(1, 11):
+                    print(f"Day {day} of the war:")
+                    if troops > nation['troops']:
+                        nation['troops'] -= troops // 10
+                        print(f"  Your troops have taken control of enemy positions.")
+                    else:
+                        troops -= nation['troops'] // 10
+                        print(f"  Enemy troops are resisting strongly.")
+
+                    if tanks > nation['tanks']:
+                        nation['tanks'] -= tanks // 10
+                        print(f"  Your tanks have destroyed enemy armor.")
+                    else:
+                        tanks -= nation['tanks'] // 10
+                        print(f"  Enemy tanks are holding their ground.")
+
+                    if light_aircraft > nation['light_aircraft']:
+                        nation['light_aircraft'] -= light_aircraft // 10
+                        print(f"  Your light aircraft have gained air superiority.")
+                    else:
+                        light_aircraft -= nation['light_aircraft'] // 10
+                        print(f"  Enemy light aircraft are fighting back.")
+
+                    if heavy_aircraft > nation['heavy_aircraft']:
+                        nation['heavy_aircraft'] -= heavy_aircraft // 10
+                        print(f"  Your heavy aircraft have bombed enemy defenses.")
+                    else:
+                        heavy_aircraft -= nation['heavy_aircraft'] // 10
+                        print(f"  Enemy heavy aircraft are launching counterattacks.")
+                    
+                    if troops <= 0 or tanks <= 0 or light_aircraft <= 0 or heavy_aircraft <= 0:
+                        print("Your forces have been defeated.")
+                        return
+
+                print("War ended. You have won!")
+                return
+
+        print(f"Enemy {enemy} not found.")
